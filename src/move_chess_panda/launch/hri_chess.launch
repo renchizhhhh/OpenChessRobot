@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Argument to the launch file.-->
+  <!-- <arg name="counter_delay_parameter" default="1.0"/> -->
+
+  <arg name="robot" default="fr3" doc="choose your robot. Possible values: [panda, fr3]"/>
+  <arg name="robot_ip" default="192.168.0.200"/>
+  <arg name="load_gripper" default="true" />
+  <arg name="launch_rviz" default="true" />
+
+  <include file="$(find franka_control)/launch/franka_control.launch" >
+    <arg name="robot" value="$(arg robot)" />
+    <arg name="robot_ip" value="$(arg robot_ip)" />
+    <arg name="load_gripper" value="$(arg load_gripper)" />
+  </include>
+
+  <include file="$(find panda_moveit_config)/launch/panda_moveit.launch">
+    <arg name="load_gripper" value="$(arg load_gripper)" />
+    <arg name="arm_id" value="$(arg robot)" />
+  </include>
+
+  <include file="$(find panda_moveit_config)/launch/moveit_rviz.launch" if="$(arg launch_rviz)" />
+
+  <!-- Start the metres_to_feet service server node.-->
+  <node name="robot" pkg="move_chess_panda" type="hri_chess_robot.py"
+    output="screen"/>
+
+  <!-- Start the gpt server node /-->
+  <node name="analyser" pkg="move_chess_panda" type="gpt_manager.py"
+    output="screen">
+  </node>
+
+  <node name="recovery" pkg="move_chess_panda" type="chess_robot_recovery.py"
+    output="screen">
+  </node>
+
+    <node name="movement" pkg="move_chess_panda" type="chess_movement_manager.py"
+    output="screen">
+  </node>
+
+</launch>

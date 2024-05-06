@@ -1,0 +1,8 @@
+#goal definition
+string move
+string special_move
+---
+#result definition
+bool success
+---
+#feedback
