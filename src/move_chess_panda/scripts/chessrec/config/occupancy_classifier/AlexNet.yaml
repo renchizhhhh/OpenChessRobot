@@ -1,0 +1,12 @@
+_BASE_: config://occupancy_classifier/_base_pretrained.yaml
+
+DATASET:
+  TRANSFORMS:
+    CENTER_CROP: null
+    RESIZE:
+    - 100
+    - 100
+TRAINING:
+  MODEL:
+    NAME: AlexNet
+    REGISTRY: OCCUPANCY_CLASSIFIER
