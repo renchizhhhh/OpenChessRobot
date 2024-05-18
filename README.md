@@ -147,6 +147,14 @@ Download the markers from [Dropbox](https://www.dropbox.com/scl/fo/efnhkak6r7a6k
 | PC                     | Can be easily replaced by other PCs with similar Nvidia card and the same Ubuntu system              | Make sure that your nvidia driver is workable with the realtime kernel.                                                                                                                                                       |
 | Chess set              | Can be easily replaced by other similar chess sets.                                                  | Retrain the chess recognition model and tweak the configurations for the robot grasping.               
 
+## Datasets and Pretrained Models
+The data folder includes real-world chess image data in both raw and processed forms, along with pre-trained and fine-tuned models. These resources are crucial for researchers aiming to replicate or extend the study. It includes the following key components:
+
+- Raw and Processed Chess Image Data: Essential for training and evaluating the robot's computer vision system.
+
+- Pre-trained and Fine-tuned Models: Facilitate replication of the study and further experimentation.
+
+Use this link to download: https://www.dropbox.com/scl/fo/fiooirwbuwdaf5xkwpq7x/AGtU47icyemeHtWATig0Bx8?rlkey=4xedb8cxqofrep1xt9iv1hme4&st=o2r613fu&dl=0
 
 ## How to Contribute
 
