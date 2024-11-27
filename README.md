@@ -48,7 +48,7 @@ If you want to use a Zed2 camera and a Nvidia Jetson for the camera stream, firs
 First, clone the repository:
 ```
 cd <your catkin workspace>
-git clone https://github.com/blackholebug/chess_panda_ros.git
+git clone https://github.com/renchizhhhh/OpenChessRobot.git
 ```
 
 Idealy, `<your catkin workspace>` now should contain folders: `franka_ros`, `ws_moveit` and the `move_chess_panda`. 
@@ -125,7 +125,7 @@ There are two customized 3D-printed parts for the robot. You can find the models
 
 #### The recognition model
 The pretrained models for chess piece recognition can be downloaded from the following link: 
-[Dropbox](https://www.dropbox.com/scl/fo/geicpxrobiv3n9vakq1pm/ACFaP1q_Szi29d68J7h3DZg?rlkey=tfe3l1jgpghslqs6mu7te2tys&dl=0). We provide the pretrained models trained on the synthetic dataset and the finetuned models on our chess set. The chess set we use can be found in the following links: [Chessboard](https://schaakshop.nl/schaakborden/Schaakbord-SB10) and (Chess pieces)[https://schaakshop.nl/Schaakstukken-Staunton-4b]. 
+[Dropbox](https://www.dropbox.com/scl/fo/geicpxrobiv3n9vakq1pm/ACFaP1q_Szi29d68J7h3DZg?rlkey=tfe3l1jgpghslqs6mu7te2tys&dl=0). We provide the pretrained models trained on the synthetic dataset and the finetuned models on our chess set. The chess set we use can be found in the following links: [Chessboard](https://schaakshop.nl/schaakborden/Schaakbord-SB10) (currently out of stock) and [Chess pieces](https://schaakshop.nl/Schaakstukken-Staunton-4b). 
 
 #### The ArUco marker
 Download the markers from [Dropbox](https://www.dropbox.com/scl/fo/efnhkak6r7a6kxxz50t2o/ANeLlaBsOktlCE3Xe9s6fsg?rlkey=e4pchwyg2ebrtjdsbwb36qsv9&dl=0). Print and place these markers at the edge of the chessboard, as shown in the demo video. Remember to update the `MARKER_SIZE` in the configurations. 
@@ -147,6 +147,14 @@ Download the markers from [Dropbox](https://www.dropbox.com/scl/fo/efnhkak6r7a6k
 | PC                     | Can be easily replaced by other PCs with similar Nvidia card and the same Ubuntu system              | Make sure that your nvidia driver is workable with the realtime kernel.                                                                                                                                                       |
 | Chess set              | Can be easily replaced by other similar chess sets.                                                  | Retrain the chess recognition model and tweak the configurations for the robot grasping.               
 
+## Datasets and Pretrained Models
+The data folder includes real-world chess image data in both raw and processed forms, along with pre-trained and fine-tuned models. These resources are crucial for researchers aiming to replicate or extend the study. It includes the following key components:
+
+- Raw and Processed Chess Image Data: Essential for training and evaluating the robot's computer vision system.
+
+- Pre-trained and Fine-tuned Models: Facilitate replication of the study and further experimentation.
+
+Use this link to download: https://www.dropbox.com/scl/fo/fiooirwbuwdaf5xkwpq7x/AGtU47icyemeHtWATig0Bx8?rlkey=4xedb8cxqofrep1xt9iv1hme4&st=o2r613fu&dl=0
 
 ## How to Contribute
 
