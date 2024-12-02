@@ -7,8 +7,8 @@ This project introduces OpenChessRobot, an open-source project at the intersecti
 The OpenChessRobot aims to facilitate cutting-edge research in HRI by focusing on both verbal and non-verbal communication modes between humans and robots. This platform is not only a tool for investigating the subtleties of human responses to robotic behaviors but also serves as a benchmark for further innovations in user study design with robots.
 
 Check out the demo video on Dropbox: 
-- OpenChessRobot: https://www.dropbox.com/scl/fi/pvhspahnnyabcuik1cid0/demo_move_speech_play-1.mp4
-- EyeTracking: https://www.dropbox.com/scl/fi/zt0xvmk05pzikhntm82p8/eye_tracking.mp4
+- OpenChessRobot Demo: https://www.dropbox.com/scl/fi/pvhspahnnyabcuik1cid0/demo_move_speech_play-1.mp4
+- Additional Eye Tracking Demo: https://www.dropbox.com/scl/fi/zt0xvmk05pzikhntm82p8/eye_tracking.mp4
 
 ### Key Features
 
