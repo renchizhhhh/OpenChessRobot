@@ -90,10 +90,9 @@ class ChessRoboPlayer(object):
         moveit_commander.os._exit(0)
 
     def homing_gripper(self):
-        homing_client = actionlib.SimpleActionClient('/franka_gripper/homing', HomingAction)
-        homing_client.wait_for_server()
-        homing_client.send_goal(HomingGoal())
-        homing_client.wait_for_result(rospy.Duration.from_sec(5.0))
+        self.homing_client.wait_for_server()
+        self.homing_client.send_goal(HomingGoal())
+        self.homing_client.wait_for_result(rospy.Duration.from_sec(5.0))
 
     def update_world_positions(self):
         current_pose = self.commander.get_current_pose().pose
@@ -120,7 +119,7 @@ class ChessRoboPlayer(object):
     def calculate_board_grids(self):
         """update the positions of grids in the base axis"""
         markers = self._markers_world
-        self.board_hight = np.max([0, np.mean(markers[:, 2])])
+        self.board_height = np.max([0, np.mean(markers[:, 2])])
         size = 8 * SQUARE_SIZE
         var = {"markers": markers, "size": size}
         [x, y, th], _ = curve_fit(
@@ -130,7 +129,7 @@ class ChessRoboPlayer(object):
 
         x_offset = rospy.get_param('x_offset')
         y_offset = rospy.get_param('y_offset')
-        self.board_corners = board_fit.board(size, x + x_offset, y + y_offset, th, self.board_hight)
+        self.board_corners = board_fit.board(size, x + x_offset, y + y_offset, th, self.board_height)
         rospy.logdebug(f"Board corners: {self.board_corners}")
         R_board = Rotation.from_euler("XYZ", [0, 0, th])
 
@@ -142,7 +141,7 @@ class ChessRoboPlayer(object):
                 square = [
                     SQUARE_SIZE * (-0.5 + number),
                     -SQUARE_SIZE * (0.5 + letters.index(letter)),
-                    self.board_hight,
+                    self.board_height,
                 ]
                 square_world = [
                     self.board_corners[3, 0],
@@ -176,10 +175,10 @@ class ChessRoboPlayer(object):
         valid_res = 10
         for _ in range(valid_res - 1):
             self.marker_update(refine_pos=False)
-            for id in avg_detected_markers.keys():
-                avg_detected_markers[id]["pos2camera"] += self.camera.detected_markers[id]["pos2camera"]
-        for id in avg_detected_markers.keys():
-            avg_detected_markers[id]["pos2camera"] /= valid_res
+            for marker_id in avg_detected_markers.keys():
+                avg_detected_markers[marker_id]["pos2camera"] += self.camera.detected_markers[marker_id]["pos2camera"]
+        for marker_id in avg_detected_markers.keys():
+            avg_detected_markers[marker_id]["pos2camera"] /= valid_res
         self.camera.detected_markers = avg_detected_markers
 
     def all_update(self):
@@ -208,7 +207,7 @@ class ChessRoboPlayer(object):
         pose = Pose()
         pose.position.x = 0.5
         pose.position.y = 0
-        pose.position.z = 0.5 + self.board_hight
+        pose.position.z = 0.5 + self.board_height
         pose.orientation.x = 0
         pose.orientation.y = 0
         pose.orientation.z = 0
@@ -264,6 +263,7 @@ class ChessRoboPlayer(object):
         # self.commander.set_path_constraints(self.constraints)
 
     def move_ready_state(self, acc=None, vel=None):
+        rospy.set_param('is_moving', True)
         if acc is None:
             acc = ChessRoboPlayer.robot_acc
         if vel is None:
@@ -273,8 +273,10 @@ class ChessRoboPlayer(object):
         self.commander.set_max_acceleration_scaling_factor(acc)
         self.commander.set_max_velocity_scaling_factor(vel)
         self.commander.go(wait=True)
+        rospy.set_param('is_moving', False)
 
     def move_camera_state(self, acc=None, vel=None, joint_position=LOW_CAM_JOINTS):
+        rospy.set_param('is_moving', True)
         if acc is None:
             acc = ChessRoboPlayer.robot_acc
         if vel is None:
@@ -283,6 +285,7 @@ class ChessRoboPlayer(object):
         self.commander.set_max_acceleration_scaling_factor(acc)
         self.commander.set_max_velocity_scaling_factor(vel)
         self.commander.go(joint_goal, wait=True)
+        rospy.set_param('is_moving', False)
 
     def move_camera_state_low(self, acc=None, vel=None):
         self.move_camera_state(acc, vel, joint_position=LOW_CAM_JOINTS)
@@ -308,20 +311,24 @@ class ChessRoboPlayer(object):
     def move_camera_state_rotate(self, acc=None, vel=None):
         self.move_camera_state(acc, vel, joint_position=ROTATE_LEFT)
 
-    def execute_path(self, waypoints, acc=None, vel=None):
+    def execute_path(self, waypoints, acc=None, vel=None, constrain=True):
+        rospy.set_param('is_moving', True)
         if acc is None:
             acc = ChessRoboPlayer.robot_acc
         if vel is None:
             vel = ChessRoboPlayer.robot_vel
-        # self.commander.set_max_velocity_scaling_factor(value=vel)
-        # self.commander.set_max_acceleration_scaling_factor(value=acc)
+        self.commander.set_max_velocity_scaling_factor(value=vel)
+        self.commander.set_max_acceleration_scaling_factor(value=acc)
         fraction = 0.0
         maxattempts = 10
         attempts = 0
         while fraction < 1.0 and attempts < maxattempts:
-            (plan, fraction) = self.commander.compute_cartesian_path(
-                waypoints, 0.01, 0.0, path_constraints=self.constraints
-            )
+            if constrain:
+                (plan, fraction) = self.commander.compute_cartesian_path(
+                    waypoints, 0.01, 0.0, path_constraints=self.constraints
+                )
+            else:
+                (plan, fraction) = self.commander.compute_cartesian_path(waypoints, 0.01, 0.0)
             attempts += 1
         plan = self.commander.retime_trajectory(
             self.commander.get_current_state(),
@@ -331,6 +338,7 @@ class ChessRoboPlayer(object):
             algorithm="time_optimal_trajectory_generation",
         )
         self.commander.execute(plan, wait=True)
+        rospy.set_param('is_moving', False)
 
     def move_gripper(self, command="open"):
         self.move_client.wait_for_server()
@@ -390,7 +398,7 @@ class ChessRoboPlayer(object):
 
         self.pickup_square = square
 
-    def place(self, square: str, x_offset=0, y_offset=0, capture=False, ishigh=False):
+    def place(self, square: str, x_offset=0, y_offset=0, capture=False, ishigh=False, release=True):
         """pick a piece at a certain square from current pose
 
         Args:
@@ -420,14 +428,16 @@ class ChessRoboPlayer(object):
                 path.append(copy.deepcopy(start_pose))
             # 4 open
             self.execute_path(path)
-            self.grasp("open")
-            # 5 up
-            start_pose = self.commander.get_current_pose().pose
-            start_pose.position.z = place_position[2] + Z_ABOVE_BOARD
-            self.execute_path([start_pose])
+            if release:
+                self.grasp("open")
+                # 5 up
+                start_pose = self.commander.get_current_pose().pose
+                start_pose.position.z = place_position[2] + Z_ABOVE_BOARD
+                self.execute_path([start_pose])
         else:
             self.execute_path(path)
-            self.grasp("open")
+            if release:
+                self.grasp("open")
         # placed/dropped piece
         rospy.loginfo(f"{square} placed! waiting...")
 
@@ -473,7 +483,7 @@ class ChessRoboPlayer(object):
         rospy.loginfo(f"executing current move: {move}")
         # capture
         capture_time = 0
-        if is_capture:
+        if is_capture and not is_en_passant:
             capture_time = time.time()
             self.execute_capture(end)
             capture_time = time.time() - capture_time
@@ -500,13 +510,16 @@ class ChessRoboPlayer(object):
             en_passant_time = time.time() - en_passant_time
         # promotion
         if is_promotion:
-            raise NotImplementedError("promotion function is not completed!")
+            print("promiting to a queen")
+            # raise NotImplementedError("promotion function is not completed!")
         execution_time = time.time() - execution_time
         rospy.loginfo(f"{move} executed! Resume to ready state")
         self.logger.info(f'move: {move}; execution time: {execution_time}; capture_time: {capture_time}; pick_time: {pick_time}; place_time: {place_time}; castling_time: {castling_time}; en_passant_time: {en_passant_time}')
         self.move_camera_state_low()
 
     def respond_chess_message(self, chess_move_msg):
+        while rospy.get_param('is_moving'):
+            rospy.sleep(0.1)
         self.execute_chess_move(chess_move_msg.data)
         self.pub_chess_res.publish(f"{chess_move_msg.data} is finished")
 

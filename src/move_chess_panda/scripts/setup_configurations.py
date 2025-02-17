@@ -2,14 +2,14 @@
 CAMERA = "left"
 SQUARE_SIZE = 0.050
 Z_ABOVE_BOARD = 0.25  # 0.25
-Z_TO_PIECE = 0.095  # 0.15
-Z_DROP = 0.004
-X_OFFSET = -0.03
-Y_OFFSET = 0.01
-ROBOT = "panda" 
+Z_TO_PIECE = 0.095 #0.095  # 0.15
+Z_DROP = 0.005
+X_OFFSET = -0.04
+Y_OFFSET = 0.020
+ROBOT = "fr3" 
 # fast
-ACC = 0.8
-VEL = 0.7
+ACC = 0.6 #0.8
+VEL = 0.6 #0.7
 
 # for camera_config.py 
 MARKER_SIZE = 0.025
@@ -17,12 +17,12 @@ MARKER_TYPE = "DICT_4X4_50"
 CAM_IP = "192.168.0.106"
 
 # for chess_commander.py
-MODEL_PATH = "/home/charles/panda/catkin_ws/src/move_chess_panda/scripts/chessrec/runs/aftermove"
+MODEL_PATH = "/home/charles/panda/catkin_ws/src/move_chess_panda/scripts/chessrec/runs/runtime"
 
 MODE = "stockfish15" # stockfish15 | maia | stockfish16
 
-ELO = 2200
-DEPTH = 20
+ELO = 2000
+DEPTH = 15
 
 # Poses for chess robot execution
 LOW_CAM_JOINTS = [

@@ -1,0 +1,117 @@
+Classify Q7:
+
+Based on the given answers to the question: "Do you think that within 10 years, robots like this could serve as a replacement of existing screen-based computers to help understand technical topics such as computer vision? Please elaborate on why or why not'", classify each answer to one of the three classes: [positive, neutral, negative] and add the category to each row. Add quotation marks if any answer is not in quotation marks. The answers are provided as a csv. 
+
+Based on the given answers to the question: " 'Do you think that within 10 years, robots like this could serve as a replacement of existing screen-based computers to improve chess skills? Please elaborate on why or why not", classify each answer to one of the three classes: [positive, neutral, negative] and add the category to each row. Add quotation marks if any answer is not in quotation marks. The answers are provided as a csv.
+
+Based on the given answers to the question: " 'Do you think that within 10 years, robots like this could serve as a replacement of existing screen-based forms of entertainment such as television? Please elaborate on why or why not'", classify each answer to one of the three classes: [positive, neutral, negative] and add the category to each row. Add quotation marks if any answer is not in quotation marks. The answers are provided as a csv.
+
+"""
+
+Analyse Q5:
+
+Based on the given answers to the question: "Comment on the technical quality of the robot as shown in the video. Mention positive or negative aspects.”, summarize the most mentioned three positive and negative aspects in the answers. Make concise bullet points. Answers:"""
+
+"""
+A: 
+Most Mentioned Positive Aspects
+
+    Smooth and Precise Movement: Many noted the arm moves fluidly, handling chess pieces accurately.
+    Clear Voice/Explanation: Several answers highlighted that the robot’s speech is generally understandable and coherent.
+    Advanced Technical Ability: Respondents frequently praised its strong board-detection and analytical capabilities.
+
+Most Mentioned Negative Aspects
+
+    Overly Technical/Complex Language: A common concern was that its explanations could be too advanced or confusing for some audiences.
+    Slow or Lengthy Process: Multiple people felt the scanning or movement took too long.
+    Robotic or Distracting Voice/Noise: The monotone sound and mechanical noise were cited as off-putting or not engaging.
+
+B:
+Most Mentioned Positive Aspects
+
+    Smooth and precise movement: The robot accurately picks up and places pieces without disturbing others, and its motion control is generally fluid and stable.
+    Clear explanations: Many appreciated that it articulates moves clearly, providing reasoning and context for each chess move.
+    Effective teaching approach: Explaining why certain moves are played and discussing strategy was seen as a strong educational feature.
+
+Most Mentioned Negative Aspects
+
+    Robotic or unnatural voice: Several found the voice to be lacking a human touch or warmth, making it less engaging.
+    Noisy or distracting movements: The mechanical sounds during operation were frequently cited as disruptive.
+    Limited interactivity: Users noted a lack of two-way communication or the ability to ask questions, reducing the personalized learning experience.
+
+C:
+
+Most Mentioned Positive Aspects
+
+    Smooth and precise movement (many note its fluid, accurate handling of chess pieces)
+    Intelligent or knowledgeable (demonstrates strong chess skills and offers insightful commentary)
+    Entertaining or interactive (engages the user through narration, voice, and conversation)
+
+Most mentioned negative aspects
+
+    Loud or noisy (the whirring and mechanical sounds are off-putting to some)
+    Bulky or large (the size and industrial look make it less home-friendly)
+    Slow or boring (some feel its pace and monotone delivery can be dull over time)
+
+Analyse Q6: 
+
+Based on the given answers to the question: "Do you have any recommendations about how to improve the robot?”, summarize the most mentioned five recommendations in the answers. Make concise bullet points. Answers:"""
+
+"""
+
+A: 
+More natural, varied, or human-like voice
+(e.g., less robotic, different voice options, more expressive tone)
+Simpler, age-appropriate explanations
+(e.g., less technical jargon, clearer language for children)
+Friendlier or more appealing design
+(e.g., adding a face or screen, making it look less mechanical and more welcoming)
+Reduced mechanical noise
+(e.g., quieter motors, less distracting sounds during movement)
+Faster or smoother operation
+(e.g., increased speed, more fluid arm movements)
+
+B: 
+More natural, simpler speech: Many respondents suggested using a less robotic voice and avoiding overly technical language, especially for beginners or children.
+Reduce mechanical noise: A common recommendation was to make the robot’s arm and movements quieter so it’s less distracting.
+Friendlier design and smaller size: Several mentioned the robot’s industrial look, proposing a more approachable or compact form—e.g., adding a face, giving it a name, or shrinking its footprint.
+Greater interactivity and Q&A: Multiple answers emphasized an option for students to ask questions and receive explanations in real time.
+Clearer movement cues: Suggestions included using a laser pointer or other visual indicators to highlight the squares being discussed.
+
+C: 
+Reduce mechanical noise: Many participants found the whirring and buzzing of the robot’s arm distracting and suggested quieter motors or motion.
+Use a more natural, expressive voice: A large number of people felt the robot’s monotone voice should be improved, either by adding emotion, varying intonation, or offering different accents.
+Make the design more compact: Several responses pointed out that the robot is bulky or tall, recommending a smaller, sleeker form factor.
+Improve overall aesthetics/approachability: Suggestions ranged from adding a “face” or a friendlier exterior to changing color schemes and reducing exposed wires.
+Enhance movement fluidity: Smoother, faster, or less “jerky” movement was mentioned to make the robot feel more natural and engaging.
+
+
+Analyse Q7.A: 
+
+Based on the given answers to the question: "Do you think that within 10 years, robots like this could serve as a replacement of existing screen-based computers to help understand technical topics such as computer vision? Please elaborate on why or why not.”, summarize the most mentioned three concerns in the answers. Make concise bullet points (keywords and explanation in one sentence). Answers:"""
+
+"""
+High cost and limited cost-effectiveness: Many responses cite that these robots would be too expensive or impractical to deploy at scale compared to existing screen-based tools.
+Concerns about acceptance and human interaction: Several people doubt whether users would find a robot’s impersonal or purely mechanical explanations as engaging as human teachers or more familiar screen-based interfaces.
+Incomplete or restricted functionality: Respondents worry that a robot arm cannot cover the breadth of content or flexibility offered by computers, and may not fully replace the versatility (e.g., code viewing, detailed visuals) screens currently provide.
+
+
+
+Analyse Q7.B: 
+
+Based on the given answers to the question: "Do you think that within 10 years, robots like this could serve as a replacement of existing screen-based computers to improve chess skills? Please elaborate on why or why not.”, summarize the most mentioned three concerns in the answers. Make concise bullet points (keywords and explanation in one sentence). Answers:"""
+
+"""
+High cost: Many respondents believe the robots would be too expensive for widespread adoption.
+Limited portability: Several people noted that these physical robots are bulkier and less convenient than screen-based computers.
+Reduced versatility: Others highlighted that a single-purpose chess robot cannot match the broader functionality and advanced analysis tools offered by standard computers.
+
+
+Analyse Q7.C: 
+
+Based on the given answers to the question: "Do you think that within 10 years, robots like this could serve as a replacement of existing screen-based forms of entertainment such as television? Please elaborate on why or why not.”, summarize the most mentioned three concerns in the answers. Make concise bullet points (keywords and explanation in one sentence). Answers:"""
+
+"""
+Lack of variety and visual/storytelling depth – Many respondents feel a robot cannot replicate the diverse content and creative appeal (shows, movies, storylines) that TV provides.
+Preference for passive entertainment – A common concern is that people want to “sit and watch,” whereas a robot requires more active engagement and isn’t as effortless as simply turning on a screen.
+Insufficient human/emotional element – Several mention that robots lack the emotional connection or relatable human factor that makes television and film compelling.

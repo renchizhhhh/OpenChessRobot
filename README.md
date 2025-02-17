@@ -8,6 +8,7 @@ The OpenChessRobot aims to facilitate cutting-edge research in HRI by focusing o
 
 Check out the demo video on Dropbox: 
 - OpenChessRobot Demo: https://www.dropbox.com/scl/fi/pvhspahnnyabcuik1cid0/demo_move_speech_play-1.mp4
+- Demo Video of the Online Study: https://www.youtube.com/shorts/Mj_rZVboH9s 
 - Additional Eye Tracking Demo: https://www.dropbox.com/scl/fi/zt0xvmk05pzikhntm82p8/eye_tracking.mp4
 
 ### Key Features

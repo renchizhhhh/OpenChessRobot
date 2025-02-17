@@ -89,9 +89,9 @@ class ChessCommander(object):
         elif col_diff == 1 and row_diff == 2:
             # Knight moves one column and two rows
             if dest_row > pick_row:
-                print("!!!errors below!!!")
-                print(pick_col, pick_row+1)
-                print(dest_col, pick_row+1)
+                # print("!!!errors below!!!")
+                # print(pick_col, pick_row+1)
+                # print(dest_col, pick_row+1)
                 pass_squares.append(letters[pick_col] + numbers[pick_row+1])
                 pass_squares.append(letters[dest_col] + numbers[pick_row+1])
             else:

@@ -233,6 +233,7 @@ class HRIChessCommander(ChessCommander):
                 rospy.logdebug(f"marker is missing. Now found {len(markers)}. ")
                 img = self.request_new_img()
                 markers = detect_markers(img, marker_type)
+                rospy.sleep(0.1)
             self.cached_markers[pose] = markers
         else:
             markers = self.cached_markers[pose]
@@ -295,7 +296,7 @@ class HRIChessCommander(ChessCommander):
 
     def observe_board(self, next_turn=chess.WHITE, multi_pose=False):
         """recognize the move by a human player and update the current board"""
-        if self.cur_robo_pose != "low":
+        if self.cur_robo_pose != "low":  # TODO: replaced by a state machine
             self.change_robot_pose("low")
         is_valid = False
         failed_time = 0
@@ -303,7 +304,12 @@ class HRIChessCommander(ChessCommander):
         while not is_valid and not rospy.is_shutdown():
             img = self.request_new_img()
             if single_step:
-                cog_board = self.onestep_recog(img=img, recognizer=self.chess_rec, color=chess.WHITE)
+                try:
+                    cog_board = self.onestep_recog(img=img, recognizer=self.chess_rec, color=chess.WHITE)
+                except RuntimeError:
+                    rospy.logwarn(f"Runtime error at line 310 hri_chess_commander.py")
+                    img = self.request_new_img()
+                    cog_board = self.onestep_recog(img=img, recognizer=self.chess_rec, color=chess.WHITE)
             else:
                 img = self.request_new_img()
                 cog_board = self.twostep_recog(img=img, recognizer=self.chess_rec, color=chess.WHITE)
@@ -366,6 +372,9 @@ class HRIChessCommander(ChessCommander):
         Returns:
         chess.Move: The move made from the previous state to the current state, or None if no move is found.
         """
+        if curr_board.status == chess.STATUS_OPPOSITE_CHECK:
+            return ""
+        
         white_kingside = chess.Move.from_uci("e1g1")
         white_queenside = chess.Move.from_uci("e1c1")
         black_kingside = chess.Move.from_uci("e8g8")
@@ -399,7 +408,11 @@ class HRIChessCommander(ChessCommander):
 
     def check_initial_state(self):
         rospy.loginfo("Checking initial state of the board...")
+        rospy.sleep(0.1) # wait a bit for the signal to go
         self.change_robot_pose(pose="low")
+        while not rospy.is_shutdown() and not rospy.get_param("is_last_command_successful"):
+            rospy.sleep(0.1)
+            rospy.logdebug("waiting for the full execution of the last command")
         checked = False
 
         while checked == False and not rospy.is_shutdown():
@@ -446,24 +459,6 @@ class HRIChessCommander(ChessCommander):
             moves = self.ext_engine.multipv(board, multipv)
             return f"fen:{fen},moves:[{moves}]"
 
-    def ask_gpt(self, publisher: rospy.Publisher, multipv: int):
-        """ask gpt to complete the conversation
-
-        Args:
-            publisher (rospy.Publisher): the ROS publisher.
-            multipv (int): how many moves to predict. Set to -1 to explain the last move.
-        """
-        to_explain = click.prompt("Need to explain the last move? [y|n]", default="n")
-        if to_explain == "y":
-            msg = self.zip_fen_and_moves(self.board, multipv=-1)
-            publisher.publish(msg)
-            input("Press Enter when analyze is done...")
-        to_analyze = click.prompt("Need to analyze the current board? [y|n]", default="n")
-        if to_analyze == "y":
-            msg = self.zip_fen_and_moves(self.board, multipv)
-            publisher.publish(msg)
-            input("Press Enter when analyze is done...")
-
     def test_analyse(self, infer_move=True, multipv=2):
         pub_fen_and_moves = rospy.Publisher("/chess_fen_and_moves", String, queue_size=50, latch=False)
 
@@ -473,20 +468,25 @@ class HRIChessCommander(ChessCommander):
         robot_color = chess.WHITE
         while not self.board.is_game_over() and not rospy.is_shutdown():
             input("Press Enter when a move is done..")
+            recognized_board = self.observe_board()
             if infer_move:
                 if human_color == self.board.turn:
                     # recognize white move first
-                    move = self.detect_move(self.board, self.observe_board(), human_color)
+                    move = self.detect_move(self.board, recognized_board, human_color)
                     print(f"Human move: {move}", "\n")
                 else:
-                    move = self.detect_move(self.board, self.observe_board(), robot_color)
+                    move = self.detect_move(self.board, recognized_board, robot_color)
                     print(f"Robot move: {move}", "\n")
                 if move:
                     self.board.push(chess.Move.from_uci(str(move)))
                 else:
-                    print("No move detected. Pass.")
+                    if recognized_board.status == chess.STATUS_OPPOSITE_CHECK:
+                        print("You Win!")
+                        break
+                    else:
+                        print("No move detected. Pass.")
             else:
-                self.board = self.observe_board()
+                self.board = recognized_board
             msg = self.zip_fen_and_moves(self.board, multipv)
             pub_fen_and_moves.publish(msg)
             print(self.board.transform(chess.flip_vertical).transform(chess.flip_horizontal), "\n")
@@ -524,53 +524,6 @@ class HRIChessCommander(ChessCommander):
                     print(f"Engine move: {move}", "\n")
                 if move:
                     self.board.push(chess.Move.from_uci(str(move)))
-
-            print(self.board.transform(chess.flip_vertical).transform(chess.flip_horizontal), "\n")
-
-            if self.board.is_game_over():
-                rospy.logerr(f"GG")
-
-        if self.board.is_game_over():
-            print(self.board.result())
-
-    def test_human_play_analyze(self, execution=True, always_rec=False, multipv=2):
-        pub_fen_and_moves = rospy.Publisher("/chess_fen_and_moves", String, queue_size=50, latch=False)
-        human_color = chess.BLACK
-
-        input("Press Enter when ready...")
-        while not self.board.is_game_over() and not rospy.is_shutdown():
-            print(self.board, "\n")
-
-            if always_rec:
-                if human_color == self.board.turn:
-                    rospy.loginfo("Human to move...")
-                    input("Press Enter when your move is done...")
-                    rec_board = self.observe_board()
-                    move = self.detect_move(self.board, rec_board, human_color)
-                    self.board = rec_board
-                    print(f"Human move: {move}", "\n")
-                else:
-                    rospy.loginfo("Robot to move...")
-                    move = self.engine_move(execution)
-                    self.board.push(chess.Move.from_uci(str(move)))
-                    print(f"Engine move: {move}", "\n")
-            else:
-                if human_color == self.board.turn:
-                    # GPT
-                    self.ask_gpt(pub_fen_and_moves, multipv)
-
-                    rospy.loginfo("Human moves...")
-                    input("Press Enter when your move is done...")
-                    move = self.detect_move(self.board, self.observe_board(), human_color)
-                    print(f"Human move: {move}", "\n")
-                else:
-                    rospy.loginfo("Robot moves...")
-                    move = self.engine_move(execution)
-                    print(f"Engine move: {move}", "\n")
-                if move:
-                    self.board.push(chess.Move.from_uci(str(move)))
-                else:
-                    print("No move detected. Pass.")
 
             print(self.board.transform(chess.flip_vertical).transform(chess.flip_horizontal), "\n")
 
@@ -732,6 +685,13 @@ if __name__ == "__main__":
     try:
         rospy.init_node("chess_commander", anonymous=True, log_level=rospy.DEBUG)
         my_chess = HRIChessCommander(cam=True)
+        if rospy.has_param("board_is_localized"):
+            rate = rospy.Rate(60)
+            while not rospy.is_shutdown() and not rospy.get_param("board_is_localized"):
+                rospy.logdebug("waiting for board localization")
+                rate.sleep()
+        else:
+            rospy.logwarn("{board_is_localized} is not found in the param server. Is the param manager node initialized?")
         my_chess.check_initial_state()
         # my_chess.test_recognition(infer_move=False)
         my_chess.test_human_play(always_rec=False)
