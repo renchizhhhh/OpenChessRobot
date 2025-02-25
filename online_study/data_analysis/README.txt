@@ -1,5 +1,5 @@
-Processed raw data:
-- User+perception+of+a+talking+chess+robot_February+13,+2025_00.44_607.csv: delete one "preview" entry and one "I do not agree to paticipant" entry from the raw data.
+Desensitized data:
+- Desensitized_data_from_597_participants.csv: Desensitized raw data. Delete one "preview" entry and one "I do not agree to paticipant" entry from the raw data. 
 
 Extracted open-ended answers of Q5,Q6,Q7,Q8
 - Scenario_A/B/C_Q5/Q6/Q7.csv
