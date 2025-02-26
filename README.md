@@ -1,15 +1,17 @@
 # OpenChessRobot: An Open-Source Reproducible Chess Robot for Human-Robot Interaction Research
 
-This project introduces OpenChessRobot, an open-source project at the intersection of artificial intelligence, robotics, and human-computer interaction with an aim for reproducibility. This repository hosts the complete source code and documentations for building and utilizing an open-source chess robot designed for advanced human-robot interaction (HRI) research. Our project leverages chess as a standardized testing environment to explore and quantify the dynamics of human interactions with robots.
+This project introduces OpenChessRobot, an open-source project at the intersection of artificial intelligence, robotics, and human-computer interaction with an aim for reproducibility. This repository hosts the complete source code and documentations for building and utilizing an open-source chess robot designed for human-robot interaction (HRI) research. Our project leverages chess as a standardized testing environment to explore and quantify the dynamics of human interactions with robots.
+
+The OpenChessRobot has been evaluated in an international online survey and expert gameplay. Please checkout our paper for more details: https://arxiv.org/abs/2405.18170
 
 ## Project Overview
 
-The OpenChessRobot aims to facilitate cutting-edge research in HRI by focusing on both verbal and non-verbal communication modes between humans and robots. This platform is not only a tool for investigating the subtleties of human responses to robotic behaviors but also serves as a benchmark for further innovations in user study design with robots.
+The OpenChessRobot aims to improve the HRI by focusing on both verbal and non-verbal communication modes between humans and robots. A large language model is used to translate the evaluation from the chess engines into human-like speech. Supported by an international survey and expert gameplay, our findings show the robot’s potential in educational and research contexts, while highlighting limitations in human-like interaction
 
-Check out the demo video on Dropbox: 
-- OpenChessRobot Demo: https://www.dropbox.com/scl/fi/pvhspahnnyabcuik1cid0/demo_move_speech_play-1.mp4
+Check out the demo videos on Youtube: 
+- OpenChessRobot Demo: https://youtu.be/RenXuiwX4Go
 - Demo Video of the Online Study: https://www.youtube.com/shorts/Mj_rZVboH9s 
-- Additional Eye Tracking Demo: https://www.dropbox.com/scl/fi/zt0xvmk05pzikhntm82p8/eye_tracking.mp4
+- Additional Eye Tracking Demo: https://youtu.be/j-b32ILQjtw
 
 ### Key Features
 
@@ -137,8 +139,13 @@ Download the markers from [Dropbox](https://www.dropbox.com/scl/fo/efnhkak6r7a6k
 
 ## Use the Robot
 ### Preparation
+Follow the step by step installation guidance to install the project. Prepare the 3D-printed gripper and attach the ArUco markers at the four corners of the chessboard. 
+
 ### Data Collection and Finetuning
+Launch the `data_collection.launch` and use `data_collect_chess_commander.py`.
+
 ### Human Robot Chess Play
+Launch the `hri_chess.launch` and use `hri_chess_commander.py`.
 
 ## Possible Alternatives of the Hardware and Accessories
 
