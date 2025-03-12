@@ -2,7 +2,7 @@
 
 This project introduces OpenChessRobot, an open-source project at the intersection of artificial intelligence, robotics, and human-computer interaction with an aim for reproducibility. This repository hosts the complete source code and documentations for building and utilizing an open-source chess robot designed for human-robot interaction (HRI) research. Our project leverages chess as a standardized testing environment to explore and quantify the dynamics of human interactions with robots.
 
-The OpenChessRobot has been evaluated in an international online survey and expert gameplay. Please checkout our paper for more details: https://arxiv.org/abs/2405.18170
+The OpenChessRobot has been evaluated in an international online survey and expert gameplay. Please checkout our paper for more details: https://doi.org/10.3389/frobt.2025.1436674
 
 ## Project Overview
 
