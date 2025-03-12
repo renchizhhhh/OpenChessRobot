@@ -132,10 +132,10 @@ There are two customized 3D-printed parts for the robot. You can find the models
 
 #### The recognition model
 The pretrained models for chess piece recognition can be downloaded from the following link: 
-[Dropbox](https://www.dropbox.com/scl/fo/geicpxrobiv3n9vakq1pm/ACFaP1q_Szi29d68J7h3DZg?rlkey=tfe3l1jgpghslqs6mu7te2tys&dl=0). We provide the pretrained models trained on the synthetic dataset and the finetuned models on our chess set. The chess set we use can be found in the following links: [Chessboard](https://schaakshop.nl/schaakborden/Schaakbord-SB10) (currently out of stock) and [Chess pieces](https://schaakshop.nl/Schaakstukken-Staunton-4b). 
+[4TU ResearchData](https://data.4tu.nl/datasets/1cb5bf64-468e-462a-a82e-c847d88a7a86). We provide the pretrained models trained on the synthetic dataset and the finetuned models on our chess set. The chess set we use can be found in the following links: [Chessboard](https://schaakshop.nl/schaakborden/Schaakbord-SB10) (currently out of stock) and [Chess pieces](https://schaakshop.nl/Schaakstukken-Staunton-4b). 
 
 #### The ArUco marker
-Download the markers from [Dropbox](https://www.dropbox.com/scl/fo/efnhkak6r7a6kxxz50t2o/ANeLlaBsOktlCE3Xe9s6fsg?rlkey=e4pchwyg2ebrtjdsbwb36qsv9&dl=0). Print and place these markers at the edge of the chessboard, as shown in the demo video. Remember to update the `MARKER_SIZE` in the configurations. 
+The markers used to localize the chess board are in the `3d_print_and_markers` folder. Print and place these markers at the edge of the chessboard, as shown in the demo video. Remember to update the `MARKER_SIZE` in the configurations. 
 
 ## Use the Robot
 ### Preparation
@@ -160,13 +160,11 @@ Launch the `hri_chess.launch` and use `hri_chess_commander.py`.
 | Chess set              | Can be easily replaced by other similar chess sets.                                                  | Retrain the chess recognition model and tweak the configurations for the robot grasping.               
 
 ## Datasets and Pretrained Models
-The data folder includes real-world chess image data in both raw and processed forms, along with pre-trained and fine-tuned models. These resources are crucial for researchers aiming to replicate or extend the study. It includes the following key components:
+The data folder includes real-world chess image data in both raw and processed forms, along with pre-trained and fine-tuned models. These resources can be found in a public data repository [4TU ResearchData](https://data.4tu.nl/datasets/1cb5bf64-468e-462a-a82e-c847d88a7a86). It includes the following key components:
 
 - Raw and Processed Chess Image Data: Essential for training and evaluating the robot's computer vision system.
 
 - Pre-trained and Fine-tuned Models: Facilitate replication of the study and further experimentation.
-
-Use this link to download: https://www.dropbox.com/scl/fo/fiooirwbuwdaf5xkwpq7x/AGtU47icyemeHtWATig0Bx8?rlkey=4xedb8cxqofrep1xt9iv1hme4&st=o2r613fu&dl=0
 
 ## How to Contribute
 
