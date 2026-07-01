@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="startup_mode" default="game"
+    doc="Startup behavior: game or localize_only." />
+
+  <arg name="recognition_backend" default="service"
+    doc="Recognition source: service (robot-owned, default) or direct (legacy commander-owned)." />
+    <arg name="vision_refine" default="false"
+    doc="Enable opt-in vision-based grasp correction during pick(). Sets /open_chess_robot/pick/vision_refine; detection tuning defaults live in settings.py (PICK_*)." />
+
+  <arg name="enable_commentary" default="false"
+    doc="Run the LLM-commentary game from this one launch terminal." />
+    
+  <arg name="launch_param_manager" default="true" />
+  <arg name="launch_robot" default="true" />
+  <arg name="launch_commander" default="true" />
+
+  <param name="/open_chess_robot/startup_mode" value="$(arg startup_mode)" />
+  <param name="/open_chess_robot/recognition/backend"
+    value="$(arg recognition_backend)" />
+  <param name="/open_chess_robot/pick/vision_refine" value="$(arg vision_refine)" />
+
+  <node name="param_svr" pkg="open_chess_robot" type="ros_param_manager.py"
+    output="screen"
+    if="$(arg launch_param_manager)" />
+
+  <node name="robot" pkg="open_chess_robot" type="hri_chess_robot.py"
+    output="screen"
+    if="$(arg launch_robot)" />
+
+  <node name="commander" pkg="open_chess_robot" type="hri_chess_commander.py"
+    output="screen"
+    if="$(eval arg('launch_commander') and arg('startup_mode') == 'game' and not arg('enable_commentary'))" />
+
+  <node name="commander" pkg="open_chess_robot" type="llm_chess_commander.py"
+    output="screen"
+    if="$(eval arg('launch_commander') and arg('startup_mode') == 'game' and arg('enable_commentary'))" />
+
+  <node name="analyser" pkg="open_chess_robot" type="llm_commentary_manager.py"
+    output="screen"
+    if="$(arg enable_commentary)" />
+
+  <!-- <node name="recovery" pkg="open_chess_robot" type="chess_robot_recovery.py"
+    output="screen">
+  </node> -->
+
+</launch>

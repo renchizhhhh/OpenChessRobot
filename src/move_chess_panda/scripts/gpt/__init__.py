@@ -1,1 +1,0 @@
-from .chess_gpt_sim import *

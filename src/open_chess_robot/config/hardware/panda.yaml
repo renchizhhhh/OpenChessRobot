@@ -1,0 +1,8 @@
+robot: panda
+robot_ip: 192.168.3.111
+move_group: panda_arm
+manipulator_group: panda_manipulator
+base_link: panda_link0
+end_effector_link: panda_link8
+hand_tcp_link: panda_hand_tcp
+rviz_config: launch/moveit_panda.rviz

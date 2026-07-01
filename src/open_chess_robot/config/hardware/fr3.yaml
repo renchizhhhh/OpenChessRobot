@@ -1,0 +1,8 @@
+robot: fr3
+robot_ip: 192.168.2.200
+move_group: fr3_arm
+manipulator_group: fr3_manipulator
+base_link: fr3_link0
+end_effector_link: fr3_link8
+hand_tcp_link: fr3_hand_tcp
+rviz_config: launch/moveit_fr3.rviz

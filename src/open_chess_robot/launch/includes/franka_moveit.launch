@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="robot" default="panda"
+    doc="Robot profile. Supported values: panda, fr3." />
+  <arg name="robot_ip"
+    default="$(eval '192.168.3.111' if arg('robot') == 'panda' else '192.168.2.200')" />
+  <arg name="load_gripper" default="true" />
+  <arg name="launch_rviz" default="true" />
+
+  <rosparam command="load"
+    file="$(find open_chess_robot)/config/hardware/$(arg robot).yaml"
+    ns="/open_chess_robot/hardware" />
+  <param name="/open_chess_robot/hardware/robot_ip" value="$(arg robot_ip)" />
+
+  <include file="$(find franka_control)/launch/franka_control.launch">
+    <arg name="robot" value="$(arg robot)" />
+    <arg name="robot_ip" value="$(arg robot_ip)" />
+    <arg name="load_gripper" value="$(arg load_gripper)" />
+  </include>
+
+  <include file="$(find panda_moveit_config)/launch/panda_moveit.launch">
+    <arg name="load_gripper" value="$(arg load_gripper)" />
+    <arg name="arm_id" value="$(arg robot)" />
+  </include>
+
+  <include file="$(find panda_moveit_config)/launch/moveit_rviz.launch"
+    if="$(arg launch_rviz)">
+    <arg name="rviz_config"
+      value="$(find open_chess_robot)/launch/moveit_$(arg robot).rviz" />
+  </include>
+</launch>

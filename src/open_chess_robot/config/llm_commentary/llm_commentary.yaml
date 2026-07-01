@@ -1,0 +1,36 @@
+# Single configuration for the LLM chess-commentary feature
+# (llm_commentary_manager.py). This is the source of truth for which models and
+# voice are used and how the pre-cache pipeline behaves.
+#
+# API KEYS ARE NEVER STORED HERE - they are read only from the environment:
+#   OpenAI     -> OPENAI_API_KEY
+#   Gemini     -> GEMINI_API_KEY (falls back to GOOGLE_API_KEY)
+#   ElevenLabs -> ELEVENLABS_API_KEY (or legacy ELEVENLAB_API_KEY)
+
+llm:
+  provider: openai          # openai | gemini
+  models:
+    openai: gpt-4o
+    gemini: gemini-2.5-flash
+  temperature: 0.7
+  max_tokens: null          # null = no explicit cap
+  gemini:                   # gemini-only options (ignored by other providers)
+    thinking_budget: 0      # 0 disables the "thinking" step (much lower latency);
+                            # null leaves the model default on
+
+tts:
+  sink: elevenlabs          # elevenlabs
+  elevenlabs:
+    voice_id: JBFqnCBsd6RMkjVDRZzb
+    model_id: eleven_multilingual_v2
+
+# System prompts, relative to config/llm_commentary/prompts/.
+prompts:
+  multipv: multi_pv.txt     # pre-cache: JSON keyed by move
+  single: single_mv.txt     # fallback: single-move analysis
+
+# Pre-cache pipeline (predict human replies -> parallel LLM calls -> cache).
+pipeline:
+  num_multipv: 15           # candidate human moves Stockfish proposes per board
+  thread_timeout: 8         # seconds to wait for the parallel cache build
+  thread_multiplier: 2      # worker threads = cpu_count * this

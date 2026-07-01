@@ -1,0 +1,30 @@
+# Python dependencies for the open_chess_robot package (Python 3.10, ROS Noetic).
+#
+# Curated list of DIRECT dependencies. ROS/apt-provided packages (rospy,
+# cv_bridge, tf, moveit_commander, franka_*, ...) are intentionally omitted:
+# they come from the system ROS install and are visible through the
+# `--system-site-packages` virtualenv. The ZED SDK (pyzed) ships with the SDK.
+#
+# For a byte-exact snapshot of a known-good environment, see requirements.freeze.txt.
+
+# --- core: vision, recognition, chess engine, robot control ---
+numpy==1.25.2
+scipy==1.9.3
+opencv-contrib-python==4.6.0.66 
+Pillow==10.1.0
+torch==2.1.0
+torchvision==0.16.0
+scikit-learn==1.3.2
+matplotlib==3.8.0
+chess==1.10.0                     # python-chess
+pynput==1.7.6
+PyYAML==6.0.1
+tqdm==4.66.1
+click==8.1.7
+wrapt==1.15.0
+yacs==0.1.8
+
+# --- LLM commentary (used when enable_commentary:=true) ---
+openai>=1.0                       # OpenAI provider
+google-genai                      # Gemini provider
+elevenlabs                        # ElevenLabs TTS sink
