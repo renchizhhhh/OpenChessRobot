@@ -18,12 +18,12 @@ Check out the demo videos on Youtube:
 - **Chess Piece Recognition**: Utilizes advanced computer vision techniques to identify chess pieces accurately and determine their positions on the board.
 - **Robotic Movements**: Executes chess moves with precision using robotic arms, enhancing the interaction realism.
 - **Interactive Communication**: Engages with human players through voice commands and robotic gestures, providing a comprehensive HRI experience.
-- **Qualitative Evaluations**: Includes ChatGPT to generate human-like game analysis based on the recognized game position.
+- **Qualitative Evaluations**: Optional LLM commentary (OpenAI or Google Gemini) turns the engine evaluation into human-like game analysis, spoken aloud via ElevenLabs text-to-speech.
 - **Reproducibility**: Detailed documentation and guidelines are provided to ensure that researchers can replicate the setup and experiments.
 
 ## Getting Started
 
-This GitHub repository relies on the materials listed here by default. However, some of these hardware can be replaced easily or we provide suggestions for possible [alternatives](#possible-alternatives-of-the-hardware). 
+This GitHub repository relies on the materials listed here by default. However, some of these hardware can be replaced or we provide suggestions for possible [alternatives](#possible-alternatives-of-the-hardware). 
 
 - a Franka Emika Panda robot arm (Franka Emika, 2020) equipped with a Franka Hand and a customized 3D-printed robot gripper [3D print](). It operates on v5.4.0 firmware.
 - a ZED2 StereoLabs camera (StereoLabs, n.d.) and a customized 3D-printed mount for it. 
@@ -58,7 +58,7 @@ cd <your catkin workspace>
 git clone https://github.com/renchizhhhh/OpenChessRobot.git
 ```
 
-Idealy, `<your catkin workspace>` now should contain folders: `franka_ros`, `ws_moveit` and the `move_chess_panda`. 
+Idealy, `<your catkin workspace>` now should contain folders: `franka_ros`, `ws_moveit` and the `open_chess_robot`. 
 
 Then, install the missing packages if any:
 ```
@@ -91,7 +91,7 @@ pip list -v
 ```
 Install all the required python packages:
 ```
-cd <your catkin workspace>/src/move_chess_panda
+cd <your catkin workspace>/src/open_chess_robot
 pip install -r requirements.txt
 ```
 Then build the python package in your workspace:
@@ -100,10 +100,9 @@ catkin build --this
 ```
 
 ### Configurations of the Project
-Important configrations are stored in the `setup_configurations.py`. Please edit the variables in this file before you start the robot. 
+Important configurations are stored in `scripts/ocr_runtime/settings.py`. Please edit the variables in this file before you start the robot. The robot model (`panda` or `fr3`) is selected with the `robot:=` launch argument instead, backed by `config/hardware/<robot>.yaml`.
 
 Variables for the robot:\
-`ROBOT`: the name of the robot. Default is `panda`.  \
 `ACC`: the acceleration for the robot movements.\
 `VEL` = the velocity for the robot movements.\
 `Z_ABOVE_BOARD`: the height above the board for the pre-grasp pose.\
@@ -125,10 +124,15 @@ Variables for the chess engine:\
 `DEPTH`: the search depth (only applicable for the stockfish15 | stockfish16).\
 `ELO`: the target ELO (only applicable for the stockfish15 | stockfish16).
 
+Variables for vision-based grasp correction (only used when `vision_refine:=true`, see [below](#vision-based-grasp-correction-optional)):\
+`PICK_SETTLE_TIME`: settle time (s) after the look-down move so the camera frame is sharp.\
+`PICK_RADIUS_MIN_RATIO` / `PICK_RADIUS_MAX_RATIO`: piece-base search band, as a fraction of the detected square side.\
+`PICK_CIRCLE_CLAHE_CLIP`, `PICK_CIRCLE_HOUGH_PARAM1`, `PICK_CIRCLE_HOUGH_PARAM2`: contrast and HoughCircles thresholds for detecting the base.
+
 ### Download
 
 #### 3D print
-There are two customized 3D-printed parts for the robot. You can find the models under `<your local repository>/src/move_chess_panda/3d_print`. Special thanks to [Thomas de Boer](https://github.com/Thomahawkuru) who helps us create and print the models. 
+There are two customized 3D-printed parts for the robot. You can find the models under `<your local repository>/src/open_chess_robot/3d_print`. Special thanks to [Thomas de Boer](https://github.com/Thomahawkuru) who helps us create and print the models. 
 
 #### The recognition model
 The pretrained models for chess piece recognition can be downloaded from the following link: 
@@ -145,13 +149,45 @@ Follow the step by step installation guidance to install the project. Prepare th
 Launch the `data_collection.launch` and use `data_collect_chess_commander.py`.
 
 ### Human Robot Chess Play
-Launch the `hri_chess.launch` and use `hri_chess_commander.py`.
+Start the robot in two steps (the commander is launched automatically):
+```bash
+roslaunch open_chess_robot hri_chess_pre.launch    # hardware + MoveIt (robot:=panda|fr3)
+roslaunch open_chess_robot hri_chess_exe.launch    # param manager, robot, and commander
+```
+Useful arguments for `hri_chess_exe.launch`:
+- `startup_mode:=game|localize_only` — full game, or only localize the board and stop.
+- `recognition_backend:=service|direct` — recognize via the `/recognize_board` service or in-process.
+- `vision_refine:=true` — enable vision-based grasp correction in `pick()`.
+- `enable_commentary:=true` — enable the LLM commentary described below.
+
+#### Vision-based grasp correction (optional)
+By default the gripper centres on a piece using the fixed `X_OFFSET`/`Y_OFFSET` in `settings.py`. With `vision_refine:=true`, `pick()` first looks straight down at the target square, detects the piece's circular base in the camera image, and applies the measured per-piece offset before grasping — compensating for pieces that are not perfectly centred on their square. The detection tuning is the `PICK_*` block in `settings.py`; each value is read via `rospy.get_param` so it can also be overridden live with `rosparam set /open_chess_robot/pick/...` during on-robot bring-up.
+
+#### LLM commentary (optional)
+Set `enable_commentary:=true` to have the robot speak game analysis. The SDKs (`openai`, `google-genai`, `elevenlabs`) are installed by default from `requirements.txt`; you only need to set the API-key env var for the provider(s) you use:
+- OpenAI: `OPENAI_API_KEY`
+- Gemini: `GEMINI_API_KEY`
+- ElevenLabs TTS: `ELEVENLABS_API_KEY`
+
+Everything else is configured in `config/llm_commentary/llm_commentary.yaml` (API keys are never stored there):
+- `llm.provider` — `openai` or `gemini`. `llm.models` sets the model per provider (defaults `gpt-4o` / `gemini-2.5-flash`); `llm.temperature` and `llm.max_tokens` tune generation, and `llm.gemini.thinking_budget: 0` disables Gemini's thinking step for much lower latency.
+- `tts` — the ElevenLabs `voice_id` and `model_id` used to speak the commentary.
+- `prompts` — the system-prompt files under `config/llm_commentary/prompts/`: `multi_pv.txt` for the pre-cached per-move analysis and `single_mv.txt` for the single-move fallback.
+- `pipeline` — the pre-cache behaviour: `num_multipv` candidate replies Stockfish proposes per board, `thread_timeout` (s), and `thread_multiplier` (worker threads = CPU count × this).
+
+### Logs and Output Files
+Runtime logs and generated files are written under `$ROS_HOME/open_chess_robot/` (by default `~/.ros/open_chess_robot/`):
+- `logs/commentary.txt` — LLM commentary log (the spoken output for each move).
+- `logs/robot.txt` — robot/motion log, including live vision-based grasp-correction activity.
+- `calibration/` — annotated images from the `check_piece_offset.py` grasp-offset tool (`calibrate_pick.png`, `check_pick.png`).
+- `debug/` — debug frames saved during board recognition.
+- `data/collect/<timestamp>/` — images and labels from data collection.
 
 ## Possible Alternatives of the Hardware and Accessories
 
 | Material               | Suggestions                                                                                          | Potential Actions to Take                                                                                                                                                                                                     |
 | ---------------------- | ---------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Robot arm and hand     | Not recommanded because it involves quite some work. Although it's possible to use other robot arms. | You may need to import your robot model to make it recognized well by MoveIt and can use MoveGroup for execution. Then you need to adjust all most all the parameters in the setup_configurations.py file to suit your robot. |
+| Robot arm and hand     | Not recommanded because it involves quite some work. Although it's possible to use other robot arms. | You may need to import your robot model to make it recognized well by MoveIt and can use MoveGroup for execution. Then you need to adjust almost all the parameters in the `scripts/ocr_runtime/settings.py` file to suit your robot. |
 | Zed2 Camera            | Can be replaced by any RGB camera                                                                    | Edit the \`get_img\` function and its relevant functions in\`utili/camera_config.py\`                                                                                                                                         |
 | NVIDIA Jetson Nano     | Can be removed if you don't need a video streaming via local network to the PC                       | Edit the Zed camera related functions in the \`Camera\` class in\`utili/camera_config.py\`                                                                                                                                    |
 | Keyboard               | Can be easily replaced by any keyboard                                                               | Plug and play                                                                                                                                                                                                                 |
