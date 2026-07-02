@@ -27,4 +27,5 @@ yacs==0.1.8
 # --- LLM commentary (used when enable_commentary:=true) ---
 openai>=1.0                       # OpenAI provider
 google-genai                      # Gemini provider
+anthropic                         # Claude provider
 elevenlabs                        # ElevenLabs TTS sink

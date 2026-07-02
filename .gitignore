@@ -1,1 +1,61 @@
-**/data_analysis/undesensitized_data
+# Project data
+**/data_analysis/undesensitized_data/
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# Python packaging and virtual environments
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+.venv/
+venv/
+env/
+ENV/
+chess_bot_env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# ROS, catkin, and CMake build outputs
+/build/
+/devel/
+/install/
+/log/
+.catkin_tools/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
+
+# Logs and runtime output
+*.log
+logs/
+*.bag
+*.bag.active
+
+# Local secrets and environment overrides
+.env
+.env.*
+!.env.example
+
+# Editor and OS files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db

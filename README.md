@@ -1,4 +1,15 @@
-# OpenChessRobot: An Open-Source Reproducible Chess Robot for Human-Robot Interaction Research
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="openchessrobot_logo_dark.png">
+    <img src="openchessrobot_logo.png" alt="OpenChessRobot logo" width="240">
+  </picture>
+</p>
+
+<h1 align="center">OpenChessRobot</h1>
+
+<p align="center">
+  An Open-Source Reproducible Chess Robot for Human-Robot Interaction Research
+</p>
 
 This project introduces OpenChessRobot, an open-source project at the intersection of artificial intelligence, robotics, and human-computer interaction with an aim for reproducibility. This repository hosts the complete source code and documentations for building and utilizing an open-source chess robot designed for human-robot interaction (HRI) research. Our project leverages chess as a standardized testing environment to explore and quantify the dynamics of human interactions with robots.
 
@@ -13,12 +24,20 @@ Check out the demo videos on Youtube:
 - Demo Video of the Online Study: https://www.youtube.com/shorts/Mj_rZVboH9s 
 - Additional Eye Tracking Demo: https://youtu.be/j-b32ILQjtw
 
+### Update to v1.1
+- Refactored the runtime with Claude Code for more robust robot error handling and motion recovery, and a more resilient chess launch/startup flow.
+- Fixed issues with the robot Cartesian path planning.
+- Added an optional vision-based grasp-correction module (enable with `vision_refine:=true`) that measures each piece's offset from the camera before grasping.
+- Improved chess-piece recognition robustness (confidence checks, marker/localization, and retry fallback).
+- Made LLM commentary a pluggable feature supporting OpenAI, Google Gemini, and Anthropic Claude, with updated default models (`gpt-5.5`, `gemini-3.5-flash`, `claude-sonnet-5`).
+- Added selectable robot models (`panda`/`fr3`) and curated `requirements.txt` (plus a `requirements.freeze.txt` lock) for reproducible setup.
+
 ### Key Features
 
 - **Chess Piece Recognition**: Utilizes advanced computer vision techniques to identify chess pieces accurately and determine their positions on the board.
 - **Robotic Movements**: Executes chess moves with precision using robotic arms, enhancing the interaction realism.
 - **Interactive Communication**: Engages with human players through voice commands and robotic gestures, providing a comprehensive HRI experience.
-- **Qualitative Evaluations**: Optional LLM commentary (OpenAI or Google Gemini) turns the engine evaluation into human-like game analysis, spoken aloud via ElevenLabs text-to-speech.
+- **Qualitative Evaluations**: Optional LLM commentary (OpenAI, Google Gemini, or Anthropic Claude) turns the engine evaluation into human-like game analysis, spoken aloud via ElevenLabs text-to-speech.
 - **Reproducibility**: Detailed documentation and guidelines are provided to ensure that researchers can replicate the setup and experiments.
 
 ## Getting Started
@@ -164,13 +183,14 @@ Useful arguments for `hri_chess_exe.launch`:
 By default the gripper centres on a piece using the fixed `X_OFFSET`/`Y_OFFSET` in `settings.py`. With `vision_refine:=true`, `pick()` first looks straight down at the target square, detects the piece's circular base in the camera image, and applies the measured per-piece offset before grasping — compensating for pieces that are not perfectly centred on their square. The detection tuning is the `PICK_*` block in `settings.py`; each value is read via `rospy.get_param` so it can also be overridden live with `rosparam set /open_chess_robot/pick/...` during on-robot bring-up.
 
 #### LLM commentary (optional)
-Set `enable_commentary:=true` to have the robot speak game analysis. The SDKs (`openai`, `google-genai`, `elevenlabs`) are installed by default from `requirements.txt`; you only need to set the API-key env var for the provider(s) you use:
+Set `enable_commentary:=true` to have the robot speak game analysis. The SDKs (`openai`, `google-genai`, `anthropic`, `elevenlabs`) are installed by default from `requirements.txt`; you only need to set the API-key env var for the provider(s) you use:
 - OpenAI: `OPENAI_API_KEY`
 - Gemini: `GEMINI_API_KEY`
+- Claude: `CLAUDE_API_KEY`
 - ElevenLabs TTS: `ELEVENLABS_API_KEY`
 
 Everything else is configured in `config/llm_commentary/llm_commentary.yaml` (API keys are never stored there):
-- `llm.provider` — `openai` or `gemini`. `llm.models` sets the model per provider (defaults `gpt-4o` / `gemini-2.5-flash`); `llm.temperature` and `llm.max_tokens` tune generation, and `llm.gemini.thinking_budget: 0` disables Gemini's thinking step for much lower latency.
+- `llm.provider` — `openai`, `gemini`, or `claude`. `llm.models` sets the model per provider (defaults `gpt-5.5` / `gemini-3.5-flash` / `claude-sonnet-5`); `llm.temperature` and `llm.max_tokens` tune generation, and `llm.gemini.thinking_budget: 0` disables Gemini's thinking step for much lower latency.
 - `tts` — the ElevenLabs `voice_id` and `model_id` used to speak the commentary.
 - `prompts` — the system-prompt files under `config/llm_commentary/prompts/`: `multi_pv.txt` for the pre-cached per-move analysis and `single_mv.txt` for the single-move fallback.
 - `pipeline` — the pre-cache behaviour: `num_multipv` candidate replies Stockfish proposes per board, `thread_timeout` (s), and `thread_multiplier` (worker threads = CPU count × this).
